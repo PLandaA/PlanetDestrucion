@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveInSpace : MonoBehaviour
+public class MoveInSpace : PlanetMovement
 {
     
     public float minX;
@@ -12,28 +12,21 @@ public class MoveInSpace : MonoBehaviour
 
     Vector2 targetPosition;
 
-    public float minSpeed;
-    public float maxSpeed;
-
-    float speed;
-
-    public float secondsToMaxDiff;
-
     void Start()
     {
         targetPosition = getRandomPosition();
     }
 
-    void Update()
+    protected override void Move ()
     {
-        if ((Vector2)transform.position != targetPosition) {
-            speed = Mathf.Lerp(minSpeed, maxSpeed, changeDifficulty());
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-
-        } else {
+        if ((Vector2)transform.position != targetPosition)
+        {
+            MoveTowardsTarget(targetPosition);
+        }
+        else
+        {
             targetPosition = getRandomPosition();
         }
-
     }
 
     Vector2 getRandomPosition() {
@@ -44,10 +37,4 @@ public class MoveInSpace : MonoBehaviour
 
    
 
-    float changeDifficulty () {
-        return Mathf.Clamp01(Time.timeSinceLevelLoad / secondsToMaxDiff);
-
     }
-
-
-}

@@ -23,8 +23,7 @@ public class DragNDrop : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        // Unified pointer input: mouse on desktop/WebGL, first touch on Android
-        // (Unity simulates mouse events from touches on mobile).
+        // Unified pointer input: mouse on desktop/WebGL, simulated from touch on Android.
         if (Input.GetMouseButtonDown(0)) {
             Vector2 pointerPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Collider2D touchedCollider = Physics2D.OverlapPoint(pointerPosition);

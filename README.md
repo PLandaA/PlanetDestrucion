@@ -1,23 +1,28 @@
-# Planet Destruction <!-- Replace with your game's actual title -->
+# Planet Destruction
 
 **A 2D arcade survival game for WebGL and Android — keep the planets apart or watch them collide.**
 
-Planets drift through space, inexorably pulled toward each other. Your job: drag them apart before they crash. Survive the timer and the game ramps up — planets get faster the longer you last. Two levels, one finger (or mouse).
+Planets drift through space, inexorably pulled toward each other. Your job: drag them apart before they crash. Endless arcade survival: planets keep entering play, and everything gets faster and meaner the longer you last. One finger (or mouse).
 
-<!-- If you publish the WebGL build, put the play link right here — for a web game this is the single most valuable line of the README:
-**[▶ Play in your browser](https://your-name.itch.io/planet-destruction)**
--->
+**[▶ Play in your browser](https://andralandev.itch.io/planetdestruction)**
 
 <!-- Add a short gameplay GIF here:
 ![Gameplay](Docs/gameplay.gif) -->
 
 ## Features
 
-- **One input codebase, two platforms** — pointer-based drag input that works identically with mouse (WebGL/desktop) and touch (Android, via Unity's touch-to-mouse simulation).
+- **One input codebase, two platforms** — pointer-based drag input that works identically with mouse (WebGL/desktop) and touch (Android and mobile browsers, via Unity's touch-to-mouse simulation).
+- **Mobile-browser ready** — responsive UI scaling and an aspect-ratio-safe camera keep the full play area visible from ultrawide monitors to phones.
 - **Time-based difficulty ramp** — planet speed interpolates from min to max over a configurable window (`Mathf.Lerp` over `timeSinceLevelLoad`), so every run gets harder the longer you survive.
 - **Two hazard behaviors** — planets that chase each other (`MoveTowards`) and planets that wander to random points in space (`MoveInSpace`).
-- **Survival timer win condition** — outlast the countdown to advance; two levels plus a win screen.
+- **Endless arcade mode** — survival time is your score; spawn rate and chaser probability keep ramping, with a persistent high score.
 - **Juice** — grab/pop particle effects, scrolling parallax background, sci-fi soundtrack.
+
+## Architecture
+
+The two planet behaviors (`MoveTowards` chases another planet, `MoveInSpace` wanders to random points) originally duplicated the difficulty-ramp math and the movement code. They are now subclasses of a **Template Method** base (`PlanetMovement`) that owns the ramped-speed skeleton — each behavior only answers *where to move*. A Strategy was considered instead, but with two fixed behaviors and no runtime swapping, inheritance is the right-sized tool.
+
+The endless mode later added a **Factory** (`PlanetSpawner`): bringing a planet into play involves real construction logic — difficulty-weighted type selection, safe-distance placement (no spawn may cause an unfair instant collision) and target wiring for chasers. The same pattern was deliberately rejected in a sibling project where spawning was trivial; patterns have to earn their place.
 
 ## Built With
 
@@ -25,16 +30,17 @@ Planets drift through space, inexorably pulled toward each other. Your job: drag
 |---|---|
 | Unity | 6 (6000.x), 2D |
 | UI | Unity UI + TextMeshPro |
-| Platforms | WebGL, Android |
+| Platforms | WebGL (desktop and mobile browsers), Android |
 
 ## Project Structure
 
 ```
 Assets/
-├── Scenes/       MainMenuScene, GameScene, GameScene2, WinScene
-├── Scripts/      DragNDrop (unified pointer input), GameManager (timer/win/lose),
-│                 MoveTowards + MoveInSpace (planet behaviors), MovingBackgrounds,
-│                 SceneChanger, ReturnToMenu
+├── Scenes/       MainMenuScene, GameScene (endless arena)
+├── Prefabs/      Planet prefabs spawned by the endless factory
+├── Scripts/      DragNDrop (unified pointer input), GameManager (survival timer, high score),
+│                 PlanetMovement + subclasses (planet behaviors), PlanetSpawner (endless factory), MovingBackgrounds,
+│                 SceneChanger, CameraFit (aspect-ratio safety)
 ├── Images/       Sprites (see External Assets Required)
 ├── Animations/   Grab / pop animation clips
 └── Music/        Soundtrack (see External Assets Required)

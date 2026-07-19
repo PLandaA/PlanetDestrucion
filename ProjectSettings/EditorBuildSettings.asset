@@ -11,10 +11,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
-    path: Assets/Scenes/GameScene2.unity
-    guid: da7ac9e1d1333e045b3d26e160726562
-  - enabled: 1
-    path: Assets/Scenes/WinScene.unity
-    guid: bdb9f174cfea7478eb9693e5651b8c85
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

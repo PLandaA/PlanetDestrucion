@@ -16,23 +16,37 @@ public class GameManager : MonoBehaviour {
 
     public float timer;
 
+    private void Awake () {
+        // Endless mode: survival time counts up and is the score.
+        timer = 0f;
+    }
+
     private void Update () {
         if (hasLost) {
             return;
         }
 
+        timer += Time.deltaTime;
         score.text = timer.ToString("F0");
-
-        if (timer <= 0) {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        } else {
-            timer -= Time.deltaTime;
-        }
     }
+
+    public bool HasLost => hasLost;
     public void GameOver () {
+        // Both colliding planets report the crash: act only once.
+        if (hasLost) {
+            return;
+        }
         hasLost = true;
-        Invoke("Delay", 1.5f);
-       
+
+        int survived = Mathf.FloorToInt(timer);
+        int best = PlayerPrefs.GetInt("HighScore");
+        if (survived > best) {
+            best = survived;
+            PlayerPrefs.SetInt("HighScore", best);
+        }
+        score.text = survived + "s  |  Best: " + best + "s";
+
+        Invoke(nameof(Delay), 1.5f);
     }
 
     void Delay() {

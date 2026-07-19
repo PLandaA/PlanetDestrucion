@@ -8,10 +8,18 @@ public class MovingBackgrounds : MonoBehaviour
 
     [SerializeField] float scrollSpeed;
 
+    Material material;
+
+    void Start()
+    {
+        material = bgRenderer.material;
+    }
+
     
     void Update()
     {
-        bgRenderer.material.mainTextureOffset += new Vector2(scrollSpeed * Time.deltaTime, 0f);
-        
+        // Wrap the offset so it never grows unbounded during long endless runs.
+        float x = Mathf.Repeat(material.mainTextureOffset.x + scrollSpeed * Time.deltaTime, 1f);
+        material.mainTextureOffset = new Vector2(x, 0f);
     }
 }
